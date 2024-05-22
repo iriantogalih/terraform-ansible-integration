@@ -3,7 +3,7 @@ provider "aws" {
 } 
 
 # 
-    setting resources for crate aws key pair and download it in local directory
+#    setting resources for crate aws key pair and download it in local directory
 # 
 
 resource "aws_key_pair" "project1_key" {
@@ -22,7 +22,7 @@ resource "local_file" "private_key" {
 }
 
 # 
-    Create local for map port in ec2 security group
+#    Create local for map port in ec2 security group
 # 
 
 locals {
@@ -49,7 +49,7 @@ locals {
 
 
 # 
-    Create VPC
+#    Create VPC
 # 
 
 
@@ -62,7 +62,7 @@ resource "aws_vpc" "demo_vpc" {
 }
 
 # 
-    Create Subnet
+#    Create Subnet
 # 
 
 resource "aws_subnet" "demo_subnet" {
@@ -76,9 +76,8 @@ resource "aws_subnet" "demo_subnet" {
 }
 
 # 
-    Create EC2 Instance
+#    Create EC2 Instance
 # 
-
 
 resource "aws_instance" "demo" {
     
@@ -95,6 +94,10 @@ resource "aws_instance" "demo" {
       Name = "private EC2"
     } 
 }
+
+# 
+#    Create security group
+# 
 
 resource "aws_security_group" "demo_sg" {
    name        = "allow_tls"
