@@ -33,16 +33,7 @@ locals {
   {
     port = 22
     description = "Ingress rule for port 22"
-  },
-  {
-    port = 433
-    description = "Ingress rule for port 433"
-  },
-  {
-    port = 3389
-    description = "Ingress rule for port 3389"
   }
-  
   
   ]
 }
