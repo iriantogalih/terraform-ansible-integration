@@ -3,25 +3,6 @@ provider "aws" {
 } 
 
 # 
-#    setting resources for crate aws key pair and download it in local directory
-# 
-
-resource "aws_key_pair" "project1_key" {
-  key_name   = "aws-demo-key"
-  public_key = tls_private_key.rsa.public_key_openssh
-}
-
-resource "tls_private_key" "rsa" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "local_file" "private_key" {
-  content  = tls_private_key.rsa.private_key_pem
-  filename = "aws-demo-key.pem"
-}
-
-# 
 #    Create local for map port in ec2 security group
 # 
 
@@ -36,6 +17,9 @@ locals {
   }
   
   ]
+  ssh_user = "ubuntu"
+  private_key_path = "~/downloads/demo-nlb-key.pem"
+
 }
 
 
@@ -74,12 +58,25 @@ resource "aws_instance" "demo" {
     
     ami = var.ami_linux
     instance_type = var.instance_type
-    key_name = "aws-demo-key"
-    
+    key_name = "demo-nlb-key"    
     vpc_security_group_ids = [aws_security_group.demo_sg.id]    
-    subnet_id = aws_subnet.demo_subnet.id 
-    //count = var.instance_count
+    subnet_id = aws_subnet.demo_subnet.id     
     associate_public_ip_address = var.enable_public
+
+    provisioner "remote-exec" {
+        inline = ["echo 'wait until SSH is ready' "]
+
+        connection {
+            type = "ssh"
+            user =  local.ssh_user
+            private_key = file(local.private_key_path)
+            host = self.public_ip 
+        }
+    }
+
+    provisioner "local-exec" {
+        command = "ansible-playbook -i ${self.public_ip}, --private-key ${"local.private_key_path"} nginx.yaml"
+    }
 
     tags = {
       Name = "private EC2"
